@@ -1,5 +1,5 @@
  <template>
-  <div id="Bar" ref="Bar" class="allbg"></div>
+  <div id="Bar" ref="Bar" class="allbg" ></div>
 </template>
 <script>
 import { shuffle } from '@/filters'
@@ -8,26 +8,21 @@ export default {
   filters: {
     shuffle
   },
-  props: ['replys', 'gifts'],
+  props: ['replys', 'gifts', 'addF'],
   data () {
     return {
       myChart: {}
     }
   },
-  async created () {
-    this.reply = await this.$account.getREPLY()
-    this.gift = await this.$account.getGIFT()
-    await this.draw()
-  },
   watch: {
-    reply: () => {
-      this.myChart.resize()
-    },
-    gift: () => {
+    addF () {
       this.myChart.resize()
     }
   },
-  mounted () {
+  async mounted () {
+    // 实例化echarts对象
+    this.myChart = this.$echarts.init(this.$refs.Bar)
+    await this.draw()
     // 调用绘制图表的方法
     window.addEventListener('resize', () => {
       this.myChart.resize()
@@ -41,7 +36,7 @@ export default {
         title: {
           text: '口袋消息',
           subtext: '当月各类消息总计',
-          top: 20,
+          top: '2%',
           x: 'center',
           textStyle: {
             color: '#000'
@@ -84,8 +79,6 @@ export default {
         ]
       }
 
-      // 实例化echarts对象
-      this.myChart = this.$echarts.init(this.$refs.Bar)
       // 绘制条形图
       this.myChart.setOption(options)
     }

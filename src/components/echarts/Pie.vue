@@ -1,6 +1,7 @@
  <template>
   <div id="Pie" ref="Pie" class="allbg"></div>
 </template>
+
 <script>
 import { shuffle } from '@/filters'
 export default {
@@ -13,20 +14,21 @@ export default {
       myChart: {}
     }
   },
-  async created () {
-    this.reply = await this.$account.getREPLY()
-    this.gift = await this.$account.getGIFT()
-    await this.draw()
+  props: {
+    addF: {
+      type: Boolean,
+      default: true
+    }
   },
   watch: {
-    reply: () => {
-      this.myChart.resize()
-    },
-    gift: () => {
+    addF () {
       this.myChart.resize()
     }
   },
-  mounted () {
+  async mounted () {
+    // 实例化echarts对象
+    this.myChart = this.$echarts.init(this.$refs.Pie)
+    await this.draw()
     // 调用绘制图表的方法
     window.addEventListener('resize', () => {
       this.myChart.resize()
@@ -35,6 +37,7 @@ export default {
   methods: {
     async draw () {
       let data = await this.$account.getDay()
+      data = data.sort((a, b) => a.msgTime - b.msgTime)
       let options = {
         title: {
           text: '口袋房间留言',
@@ -116,8 +119,6 @@ export default {
         ]
       }
 
-      // 实例化echarts对象
-      this.myChart = this.$echarts.init(this.$refs.Pie)
       // 绘制条形图
       this.myChart.setOption(options)
     }

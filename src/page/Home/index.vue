@@ -20,16 +20,22 @@
           </ul>
           <div v-if="gift.length"><span class="lukey">爱之深：{{gift.length?gift[0].name:0}}</span><span>投票最多的聚聚</span></div>
           <div v-if="reply.length"><span class="lukey">小锦鲤：{{reply.length?reply[0].name:0}}</span><span>被翻牌最多的聚聚</span></div>
-          <div><span class="lukey">痴情人：{{idlist.length?idlist[0].name:0}}</span><span>口袋留言最多的聚聚</span></div>
+          <div v-if="idlist.length"><span class="lukey">痴情人：{{idlist.length?idlist[0].name:0}}</span><span>口袋留言最多的聚聚</span></div>
         </div>
-        <Bar class="bar" :gifts="gift" :replys="reply"/>
+        <Bar class="bar" :addF="addF"/>
       </div>
       <div class="pie">
-        <Pie />
+        <Pie :addF="addF"/>
       </div>
     </div>
     <div class="right" v-if="gift.length">
       <Lines :data="gift.filter((item,i) => i<40)" title="口袋投票" sTitle="仅显示前40位的聚聚" c="票" />
+    </div>
+    <div v-if="show" class="password">
+      <div class="pic" :style="{backgroundImage:`url(${bg})`}"></div>
+      <input type="text" placeholder="请输入暗号查看全部内容" v-model="password">
+      <p @click="showAll">查看全部</p>
+      <p class="nopass" @click="show = false">只看部分</p>
     </div>
   </div>
 </template>
@@ -48,7 +54,8 @@ export default {
   filters: {datetamp, timestamp, cent},
   data () {
     return {
-      addF: false,
+      bg: '',
+      addF: true,
       // 每天留数量的list
       allInfo: [],
       // 所有翻牌
@@ -66,15 +73,42 @@ export default {
       },
       // 所有的投票
       gift: [],
-      idlist: []
+      idlist: [],
+      password: '',
+      show: true
     }
   },
   async created () {
-    this.gift = await this.$account.getGIFT()
-    this.reply = await this.$account.getREPLY()
     this.day = await this.$account.getDay()
     this.data = await this.$account.getWeek()
-    this.idlist = await this.$account.getIdlist()
+    this.bg = await this.$account.getBg()
+  },
+  watch: {
+    gift () {
+      this.addF = false
+      setTimeout(() => {
+        this.addF = true
+      }, 1)
+    },
+    reply () {
+      this.addF = false
+      setTimeout(() => {
+        this.addF = true
+      }, 1)
+    }
+  },
+  methods: {
+    async showAll () {
+      let response = await this.$account.getDarkNum(this.password)
+      if (!response.data) {
+        alert(response.msg)
+        return
+      }
+      this.show = false
+      this.idlist = await this.$account.getIdlist()
+      this.gift = await this.$account.getGIFT()
+      this.reply = await this.$account.getREPLY()
+    }
   },
   computed: {
     allMsgNum () {
@@ -207,6 +241,59 @@ export default {
   .right {
     width: 18%;
     height: 100%;
+  }
+}
+.password{
+  position: fixed;
+  width: 300px;
+  // height: 450px;
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(56, 56, 56, 0.233);
+  border-radius: 8px;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  padding:10px;
+  .pic{
+    height: 160px;
+    width: 100%;
+    background-position: center center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    background-color: @primary;
+  }
+  input{
+    width: 100%;
+    padding: 4px 15px;
+    border-radius: 8px;
+    line-height: 40px;
+    border:1px solid #b9b9b9;
+  }
+  input:focus{
+    outline: none;
+  }
+  p{
+    width: 100%;
+    text-align: center;
+    border-radius: 8px;
+    background-color: @primary;
+    padding: 10px 0;
+    color: #fff;
+    cursor: pointer;
+    margin: 10px 0;
+  }
+  .nopass{
+    background-color: transparent;
+    padding: 0;
+    color:#cacaca;
+    font-size: 14px;
+    margin: auto;
+    border-bottom:1px solid #cacaca;
+    width: 80px;
+    padding-bottom: 4px;
+    border-radius: 0;
   }
 }
 </style>

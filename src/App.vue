@@ -1,12 +1,21 @@
 <template>
-  <div id="app">
+  <div id="app" :style="{backgroundImage:bg}">
     <router-view/>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'App'
+  name: 'App',
+  data () {
+    return {
+      bg: ''
+    }
+  },
+  async created () {
+    this.bg = await this.$account.getBg()
+    console.log(this.bg)
+  }
 }
 </script>
 
@@ -16,10 +25,11 @@ html{
   min-height: 700px;
   width: 100%;
   height: 100%;
-  background-image: url(http://www.crean.top/pocket/data/2019/6/wxj//bg.jpg);
+  background-image: url(http://www.crean.top/pocket/data/2019/6/wxj/bg.jpg);
   background-position: center center;
   background-size: cover;
   background-repeat: no-repeat;
+  // background-color: @primary;
 }
 body{
   width: calc(100% - 16px);
