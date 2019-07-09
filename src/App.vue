@@ -9,12 +9,11 @@ export default {
   name: 'App',
   data () {
     return {
-      bg: ''
+      bg: '132'
     }
   },
   async created () {
     this.bg = await this.$account.getBg()
-    console.log(this.bg)
   }
 }
 </script>

@@ -100,19 +100,12 @@ export default {
       this.myChart.setOption(options)
     }
   },
-  mounted () {
-    this.$nextTick(function () {
-      // 调用绘制图表的方法
-      this.draw()
-      window.addEventListener('resize', () => {
-        this.myChart.resize()
-      })
+  async mounted () {
+    // 调用绘制图表的方法
+    await this.draw()
+    window.addEventListener('resize', () => {
+      this.myChart.resize()
     })
-  },
-  watch: {
-    data () {
-      this.draw()
-    }
   }
 }
 </script>

@@ -11,32 +11,29 @@ export default {
   },
   data () {
     return {
-      myChart: {}
-    }
-  },
-  props: {
-    addF: {
-      type: Boolean,
-      default: true
+      myChart: {},
+      day: []
     }
   },
   watch: {
-    addF () {
+    '$store.state.idlist' () {
       this.myChart.resize()
     }
   },
   async mounted () {
+    await this.$store.dispatch('getDay')
+    this.day = this.$store.state.day
     // 实例化echarts对象
     this.myChart = this.$echarts.init(this.$refs.Pie)
-    await this.draw()
     // 调用绘制图表的方法
+    await this.draw()
     window.addEventListener('resize', () => {
       this.myChart.resize()
     })
   },
   methods: {
     async draw () {
-      let data = await this.$account.getDay()
+      let data = this.day
       data = data.sort((a, b) => a.msgTime - b.msgTime)
       let options = {
         title: {

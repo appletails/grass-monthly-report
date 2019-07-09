@@ -11,18 +11,22 @@ export default {
   props: ['replys', 'gifts', 'addF'],
   data () {
     return {
-      myChart: {}
+      myChart: {},
+      data: this.$store.state.week
     }
   },
   watch: {
-    addF () {
+    '$store.state.week': async function () {
+      this.data = this.$store.state.week
+      await this.draw()
+    },
+    '$store.state.idlist' () {
       this.myChart.resize()
     }
   },
   async mounted () {
     // 实例化echarts对象
     this.myChart = this.$echarts.init(this.$refs.Bar)
-    await this.draw()
     // 调用绘制图表的方法
     window.addEventListener('resize', () => {
       this.myChart.resize()
@@ -30,8 +34,7 @@ export default {
   },
   methods: {
     async draw () {
-      let data = await this.$account.getWeek()
-      data = data.msg
+      let data = this.data.msg
       let options = {
         title: {
           text: '口袋消息',

@@ -7,6 +7,7 @@ import router from './router'
 import api from '@/common/api'
 // 引入基本模板
 import echarts from 'echarts/lib/echarts'
+import store from './store'
 
 // 引入折线图等组件
 import 'echarts/lib/chart/line'
@@ -42,6 +43,7 @@ Vue.config.productionTip = false
 new Vue({
   el: '#app',
   router,
+  store,
   components: { App },
   template: '<App/>'
 })
